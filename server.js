@@ -1,7 +1,7 @@
 // require necessary NPM packages
 const express = require('express')
 const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const cors = require('cors')
 
 // require route files
@@ -13,16 +13,39 @@ const errorHandler = require('./lib/error_handler')
 
 // require database configuration logic
 // `db` will be the actual Mongo URI as a string
-const db = require('./config/db')
+// const db = require('./config/db')
 
 // require configured passport authentication middleware
 const auth = require('./lib/auth')
 
-// establish database connection
-mongoose.Promise = global.Promise
-mongoose.connect(db, {
-  useMongoClient: true
+const { Client } = require('pg')
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL
 })
+
+client.connect(err => {
+  if (err) {
+    console.error('connection error', err.stack)
+  } else {
+    console.log('connected')
+  }
+})
+
+// pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+//   client.query('SELECT * FROM tst', function (err, result) {
+//     done()
+//     if (err) return console.error(err)
+//     console.log(result.rows)
+//   })
+//
+//   console.log(err)
+// })
+
+// client.query('SELECT NOW()')
+//   .then(result => console.log(process.env.DATABASE_URL))
+//   .catch(e => console.error(e.stack))
+//   .then(() => client.end())
 
 // instantiate express application object
 const app = express()
